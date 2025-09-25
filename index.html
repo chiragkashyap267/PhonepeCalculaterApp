@@ -1,0 +1,146 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Degrowth Calculator — TPV</title>
+  <style>
+    :root{
+      --bg: #f4f6fb;
+      --card: #ffffff;
+      --accent: linear-gradient(90deg,#4f46e5,#06b6d4);
+      --border: rgba(79,70,229,0.15);
+    }
+    *{box-sizing:border-box}
+    body { font-family: Inter, Arial, sans-serif; margin: 0; min-height:100vh; display:flex; align-items:center; justify-content:center; background: var(--bg); padding:20px; }.card {
+  width: 100%;
+  max-width: 480px;
+  background: var(--card);
+  border-radius: 14px;
+  padding: 22px;
+  box-shadow: 0 8px 30px rgba(15,23,42,0.08);
+  border: 4px solid transparent;
+  background-clip: padding-box;
+  position: relative;
+}
+
+/* Fancy gradient border using pseudo element */
+.card::before{
+  content: "";
+  position: absolute;
+  inset: -4px; /* matches border width */
+  z-index: -1;
+  border-radius: 18px;
+  background: linear-gradient(90deg,#4f46e5 0%, #06b6d4 100%);
+  opacity: 0.15;
+  filter: blur(6px);
+}
+
+h2{margin:0 0 10px 0; font-size:20px; color:#0f172a}
+label{display:block; font-size:13px; color:#334155; margin-top:12px}
+input[type=number]{
+  margin-top:6px;
+  padding:10px 12px;
+  width:100%;
+  border:1px solid #e6eef8;
+  border-radius:8px;
+  font-size:15px;
+  background: #fbfdff;
+}
+
+.row{display:flex; gap:10px}
+.btn{
+  margin-top:14px;
+  padding:11px 14px;
+  width:100%;
+  border:none;
+  background:var(--accent);
+  color:white;
+  font-weight:600;
+  font-size:15px;
+  border-radius:10px;
+  cursor:pointer;
+  background-image: linear-gradient(90deg,#4f46e5,#06b6d4);
+  box-shadow: 0 6px 18px rgba(6,182,212,0.12);
+}
+.btn:active{transform:translateY(1px)}
+
+.result {
+  margin-top:16px;
+  font-size:18px;
+  font-weight:700;
+  color:#0b1220;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px;
+  border-radius:10px;
+  background: linear-gradient(180deg, rgba(255,249,230,0.9), rgba(255,250,240,0.6));
+  border:1px solid rgba(250,204,21,0.15);
+  box-shadow: 0 4px 20px rgba(250,204,21,0.06);
+}
+
+.label-small{font-size:12px; color:#475569; font-weight:600}
+.value-amt{font-size:20px; color:#92400e}
+
+.note{margin-top:10px; font-size:13px; color:#475569}
+
+@media (max-width:520px){
+  .card{padding:16px; border-radius:12px}
+  .result{font-size:16px}
+}
+
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Degrowth Calculator — TPV</h2><label>Last Month Transaction</label>
+<input type="number" id="lastMonth" placeholder="Enter amount (e.g., 150000)">
+
+<label>Current Month Transaction</label>
+<input type="number" id="currentMonth" placeholder="Enter amount (e.g., 94000)">
+
+<label>Allowed Degrowth %</label>
+<input type="number" id="percent" value="20">
+
+<button class="btn" onclick="calculate()">Calculate</button>
+
+<div id="resultContainer" style="display:none" class="result">
+  <div>
+    <div class="label-small">Required TPV</div>
+    <div id="result" class="value-amt">₹0</div>
+  </div>
+  <div class="note" id="status">&nbsp;</div>
+</div>
+
+<div class="note">Tip: If Required TPV is ₹0, customer is already within the allowed degrowth.</div>
+
+  </div>  <script>
+    function calculate(){
+      const lastMonth = parseFloat(document.getElementById('lastMonth').value);
+      const currentMonth = parseFloat(document.getElementById('currentMonth').value);
+      const percent = parseFloat(document.getElementById('percent').value);
+
+      const resultContainer = document.getElementById('resultContainer');
+      const resultEl = document.getElementById('result');
+      const statusEl = document.getElementById('status');
+
+      if(isNaN(lastMonth) || isNaN(currentMonth) || isNaN(percent)){
+        alert('Please fill all fields with numeric values.');
+        return;
+      }
+
+      const allowedMin = lastMonth * (1 - percent/100);
+      let topup = allowedMin - currentMonth;
+      if(topup <= 0) {
+        topup = 0;
+        statusEl.innerText = 'Within allowed degrowth';
+      } else {
+        statusEl.innerText = 'Bring this amount by month-end to avoid >' + percent + '% degrowth';
+      }
+
+      resultEl.innerText = '₹' + Math.round(topup).toLocaleString();
+      resultContainer.style.display = 'flex';
+    }
+  </script></body>
+</html>
